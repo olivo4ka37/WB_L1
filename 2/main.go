@@ -2,17 +2,37 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
 )
 
 func main() {
-	arr1 := []int{2, 4, 6, 8, 10}
+	// Инициализируем wg как переменную типа WaitGroup
+	// wg будем использовать для ожидания ещё не завершенных операций
+	var wg sync.WaitGroup
 
-	for i := 0; i < len(arr1); i++ {
+	// Инициализируем и присваиваем значение массиву nums
+	nums := []int{2, 4, 6, 8, 10}
+
+	// Добавляем в WaitGroup количество ожидаемых горутин равное кол-ву элементов массива nums
+	wg.Add(len(nums))
+
+	// Создаем цикл операций для каждого элемента массива
+	for i := 0; i < len(nums); i++ {
+		// Вызываем горутину считающую квадрат nums[i]
+		// Выводящую результат в stdout
 		go func(i int) {
-			fmt.Println(arr1[i] * arr1[i])
+			SquareOfInt(nums[i], &wg)
 		}(i)
 	}
 
-	time.Sleep(100 * time.Millisecond)
+	// Wait() Блокируется пока счетчик не станет равным нулю
+	// Это позволяет дождаться выполнения всех горутин, а только потом завершить программу.
+	wg.Wait()
+}
+
+// SquareOfInt Функция считающая и выводящая квадрат числа, при каждом выполнении
+// уменьшает счетчик операций WaitGroup на 1.
+func SquareOfInt(i int, wg *sync.WaitGroup) {
+	fmt.Printf("square of %d is equal to %d\n", i, i*i)
+	wg.Done()
 }
