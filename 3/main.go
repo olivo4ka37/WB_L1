@@ -25,7 +25,7 @@ func main() {
 		//Вызываем горутину считающую квадрат nums[i] и записывающую её
 		// в канал squaresCh.
 		go func(i int) {
-			AddSquareToChanel(nums[i], squaresCh, &wg)
+			addSquareToChanel(nums[i], squaresCh, &wg)
 		}(i)
 	}
 
@@ -43,13 +43,13 @@ func main() {
 	wg.Wait()
 }
 
-// AddSquareToChanel Добавляет в канал значение квадрата
-func AddSquareToChanel(num int, sumCh chan int, wg *sync.WaitGroup) {
-	sumCh <- CalcSquare(num, wg)
+// addSquareToChanel Добавляет в канал значение квадрата
+func addSquareToChanel(num int, sumCh chan int, wg *sync.WaitGroup) {
+	sumCh <- calcSquare(num, wg)
 }
 
-// CalcSquare Считает квадрат числа и уменьшает счетчик горутин на 1
-func CalcSquare(num int, wg *sync.WaitGroup) int {
+// calcSquare Считает квадрат числа и уменьшает счетчик горутин на 1
+func calcSquare(num int, wg *sync.WaitGroup) int {
 	wg.Done()
 	return num * num
 }

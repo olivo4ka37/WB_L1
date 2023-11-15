@@ -21,7 +21,7 @@ func main() {
 		// Вызываем горутину считающую квадрат nums[i]
 		// Выводящую результат в stdout
 		go func(i int) {
-			SquareOfInt(nums[i], &wg)
+			squareOfInt(nums[i], &wg)
 		}(i)
 	}
 
@@ -30,9 +30,9 @@ func main() {
 	wg.Wait()
 }
 
-// SquareOfInt Функция считающая и выводящая квадрат числа, при каждом выполнении
+// squareOfInt Функция считающая и выводящая квадрат числа, при каждом выполнении
 // уменьшает счетчик операций WaitGroup на 1.
-func SquareOfInt(i int, wg *sync.WaitGroup) {
+func squareOfInt(i int, wg *sync.WaitGroup) {
 	fmt.Printf("square of %d is equal to %d\n", i, i*i)
 	wg.Done()
 }
