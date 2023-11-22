@@ -28,8 +28,8 @@ func main() {
 			go worker(i+1, chanStr)
 		}
 		time.Sleep(time.Second)
-	}
 
+	}
 }
 
 // declareWorker Считываем с консольного ввода значение воркеров
