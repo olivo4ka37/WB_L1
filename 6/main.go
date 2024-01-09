@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"sync"
 	"time"
 )
@@ -13,174 +12,91 @@ type w8Group struct {
 	wg *sync.WaitGroup
 }
 
-// Горутина проверяет закрылся ли канал пытаясь вычитать из него данные,
-// если вернулось стандартное значение (не ок), то завершаем функцию
-func (wg *w8Group) okChanel(ch <-chan int) {
-	defer wg.wg.Done()
-
-	for {
-		x, err := <-ch
-		if !err {
-			fmt.Println("goroutine checking if channel closed finished")
-			return
-		}
-		fmt.Printf(" The number is: %d\n", x)
-	}
-}
-
-// range завершится сам, как только канал закроется
-func (wg *w8Group) rangeChanel(ch <-chan int) {
-	defer wg.wg.Done()
-
-	for x := range ch {
-		fmt.Printf(" The number is: %d\n", x)
-	}
-}
-
-// используем отдельный канал для завершения горутины
-func (wg *w8Group) stopChanel(stop <-chan struct{}, ch <-chan int) {
-	defer wg.wg.Done()
+// stopChannel Данная функция останавливается как только в канал приходит любое значение.
+// (Какое значение будет переданно в канал и какой тип данных будет неважно, как пример я использовал канал типа bool)
+func (w *w8Group) stopChanel(stop chan bool) {
+	w.wg.Done()
 
 	for {
 		select {
-		case v := <-ch:
-			fmt.Printf(" got: %d\n", v)
 		case <-stop:
-			fmt.Println("goroutine with cancel channel finished")
+			fmt.Println("Received value from chanel. Exiting from stopChanel...")
 			return
+		default:
+			fmt.Println("Working...")
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
 
-// используем сигнал из контекста для завершения горутины
-func (wg *w8Group) doneChanel(ctx context.Context, ch <-chan int) {
-	defer wg.wg.Done()
+// stopContext Данная функци останавливается как только канал из контекста закрывается.
+func (w *w8Group) stopContext(ctx context.Context) {
+	w.wg.Done()
 
 	for {
 		select {
-		case v := <-ch:
-			fmt.Printf(" got: %d\n", v)
 		case <-ctx.Done():
-			fmt.Println("close context goroutine finished")
+			fmt.Println("Received stop signal. Exiting from stopContext...")
 			return
+		default:
+			fmt.Println("Working...")
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
 
-// используем сигнал из контекста для завершения горутины
-// в данном случае контекст завершается по таймауту, так как выполняется долгая операция
-func (wg *w8Group) timeoutChanel(ctx context.Context, ch <-chan int) {
-	defer wg.wg.Done()
-
+// stopEndChanel Данная функция завершает свою работу, когда канал закрывается.
+func (w *w8Group) stopEndChanel(ch <-chan int) {
+	defer w.wg.Done()
 	for {
-		select {
-		case <-time.After(10 * time.Second): // long operation
-			fmt.Printf(" got: %d\n", <-ch)
-		case <-ctx.Done():
-			fmt.Println("context timeout goroutine finished")
+		_, ok := <-ch
+		if ok != true {
+			fmt.Println("Chanel is ended. Exiting from stopEndChanel...")
 			return
 		}
-	}
-}
-
-// запись случайных чисел в канал с определенной периодичностью
-// завершается по сигналу контекста
-
-func (wg *w8Group) tickerChanel(ctx context.Context, ch chan int) {
-	defer wg.wg.Done()
-
-	ticker := time.NewTicker(time.Second)
-
-	for {
-		select {
-		case <-ticker.C:
-			a := rand.Int()
-			ch <- a
-			fmt.Printf("sent: %d\n", a)
-		case <-ctx.Done():
-			fmt.Println("exiting from writer")
-			ticker.Stop()
-			return
-		}
+		fmt.Println("Working...")
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
 func main() {
-	// context timeout
-	fmt.Println("Context timeout exceeded")
-	ctx, cancel := context.WithCancel(context.Background())
-	timeout, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	ch := make(chan int, 1)
-	g := w8Group{
+	w := w8Group{
 		wg: &sync.WaitGroup{},
 	}
+	w.wg.Add(3)
 
-	g.wg.Add(1)
-	go g.tickerChanel(ctx, ch)
-	go g.timeoutChanel(timeout, ch)
+	// Блок кода в котором запускаем горутину stopChanel, а потом останавливаем её.
+	stop := make(chan bool)
+	go w.stopChanel(stop)
 
-	g.wg.Wait()
+	time.Sleep(1 * time.Second)
+	fmt.Println("Sending value to chanel...")
+	stop <- true
+
+	// Блок кода в котором запускаем горутину stopChanel, а потом останавливаем её.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go w.stopContext(ctx)
+
+	time.Sleep(1 * time.Second)
+	fmt.Println("Cancelling the worker...")
 	cancel()
 
-	// canceling context
-	fmt.Println("\nContext cancel")
-	ctx, cancel = context.WithCancel(context.Background())
-	ch = make(chan int, 1)
+	// Блок кода в котором запускаем горутину stopEndChanel
 
-	g.wg = &sync.WaitGroup{}
-	g.wg.Add(2)
-	go g.tickerChanel(ctx, ch)
-	go g.doneChanel(ctx, ch)
+	ch := make(chan int)
 
-	time.Sleep(3 * time.Second)
-	cancel()
+	go w.stopEndChanel(ch)
+
+	for i := 0; i < 10; i++ {
+		ch <- 1
+	}
 	close(ch)
-	g.wg.Wait()
 
-	// stopping channel
-	fmt.Println("\nStop channel")
-	ch = make(chan int, 1)
-	stop := make(chan struct{})
-	ctx, cancel = context.WithCancel(context.Background())
+	// Демонстрация завершения всех горутин
+	time.Sleep(2 * time.Second)
+	fmt.Println("Main function exits.")
 
-	g.wg = &sync.WaitGroup{}
-	g.wg.Add(2)
-	go g.tickerChanel(ctx, ch)
-	go g.stopChanel(stop, ch)
-
-	time.Sleep(3 * time.Second)
-	stop <- struct{}{}
-	cancel()
-	close(ch)
-	g.wg.Wait()
-
-	// ranging channel
-	fmt.Println("\nRanging channel")
-	ch = make(chan int, 1)
-	ctx, cancel = context.WithCancel(context.Background())
-
-	g.wg = &sync.WaitGroup{}
-	g.wg.Add(2)
-	go g.tickerChanel(ctx, ch)
-	go g.rangeChanel(ch)
-
-	time.Sleep(3 * time.Second)
-	close(ch)
-	cancel()
-	g.wg.Wait()
-
-	// closing channel
-	fmt.Println("\nClosing channel")
-	ch = make(chan int, 1)
-	ctx, cancel = context.WithCancel(context.Background())
-
-	g.wg = &sync.WaitGroup{}
-	g.wg.Add(2)
-	go g.tickerChanel(ctx, ch)
-	go g.okChanel(ch)
-
-	time.Sleep(3 * time.Second)
-	close(ch)
-	cancel()
-	g.wg.Wait()
+	w.wg.Wait()
 }
