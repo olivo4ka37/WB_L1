@@ -7,18 +7,16 @@ import (
 
 func main() {
 	// Примеры различных переменных
-	var structVariable struct{}
 	var integerVariable int = 42
-	var floatVariable float64 = 3.14
 	var stringVariable string = "Hello, Golang!"
 	var boolVariable bool = true
+	var chanVariable chan struct{}
 
 	// Определение типа переменной
-	detectType(structVariable)
 	detectType(integerVariable)
-	detectType(floatVariable)
 	detectType(stringVariable)
 	detectType(boolVariable)
+	detectType(chanVariable)
 }
 
 // Функция для определения типа переменной
