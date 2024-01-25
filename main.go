@@ -2,64 +2,35 @@ package main
 
 import (
 	"fmt"
-	"sync"
 )
 
-// square печатает в терминал квадрат числа
-func square(n int, wg *sync.WaitGroup) {
-	fmt.Printf("%d^2 = %d\n", n, n*n)
-	wg.Done() // уменьшаем счетчик ожидаемых горутин
+func setBit(value int64, pos uint, bitValue uint) int64 {
+	// Очищаем i-й бит
+	mask := ^(int64(1) << pos)
+	x1 := fmt.Sprintf("%b", mask)
+	fmt.Println(x1)
+	x1 = fmt.Sprintf("%b", value)
+	fmt.Println(x1)
+	value &= mask
+	x1 = fmt.Sprintf("%b", value)
+	fmt.Println("Valeus &= mask is: ", x1)
+
+	// Устанавливаем i-й бит в новое значение
+	value |= int64(bitValue) << pos
+	x1 = fmt.Sprintf("%b", value)
+	fmt.Println(x1)
+
+	return value
 }
 
-//
-//func main() {
-//	var wg sync.WaitGroup
-//	go func() {
-//		wg.Add(1)
-//		defer wg.Done()
-//		fmt.Println("1st goroutine sleeping...")
-//		time.Sleep(1)
-//	}()
-//	wg.Wait()
-//	fmt.Println("All goroutines complete.")
-//}
-
-//func main()  {
-//	var wg sync.WaitGroup
-//
-//	wg.Add(1)
-//	go func() {
-//		defer wg.Done()
-//
-//		fmt.Println("1st goroutine sleeping...")
-//		time.Sleep(100 * time.Millisecond)
-//	}()
-//
-//	wg.Add(1)
-//	go func() {
-//		defer wg.Done()
-//
-//		fmt.Println("2nd goroutine sleeping...")
-//		time.Sleep(200 * time.Millisecond)
-//	}()
-//
-//	wg.Wait()
-//	fmt.Println("All goroutines complete.")
-//}
-
 func main() {
-	hello := func(wg *sync.WaitGroup, id int) {
-		defer wg.Done()
-		fmt.Printf("Hello from %v!\n", id)
-	}
+	var number int64 = 7
+	var bitPosition uint = 2
+	var bitValue uint = 1
 
-	const numGreeters = 5
-	var wg sync.WaitGroup
+	// Устанавливаем i-й бит в 1
+	result := setBit(number, bitPosition, bitValue)
 
-	wg.Add(numGreeters)
-	for i := 0; i < numGreeters; i++ {
-		go hello(&wg, i+1)
-	}
-
-	wg.Wait()
+	fmt.Printf("Исходное значение: %d\n", number)
+	fmt.Printf("После установки i-го бита: %d\n", result)
 }
