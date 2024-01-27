@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 		s.wg.Add(1)
 		//Вызываем горутину инкриментирующую счетчик в нашей структуре на 1
 		go func(i int) {
-			s.worker()
+			s.atomicIncrease()
 		}(i)
 	}
 	s.wg.Wait()
@@ -25,12 +26,12 @@ func main() {
 }
 
 type schetchik struct {
-	count int //Значение в счетчике
+	count int64 //Значение в счетчике
 	wg    sync.WaitGroup
 	mut   sync.Mutex
 }
 
-// worker инкриментирует значение счетчика в структуре на 1
+// worker инкрементирует значение счетчика в структуре на 1
 // Использует методы синхронизации Mutex и WaitGroup
 func (s *schetchik) worker() {
 	s.mut.Lock()
@@ -38,3 +39,12 @@ func (s *schetchik) worker() {
 	s.mut.Unlock()
 	s.wg.Done()
 }
+
+// atomicIncrease Инкрементирует значение счетчика в структуре на 1
+// Использует методы синхронизации Atomic и WaitGroup
+func (s *schetchik) atomicIncrease() {
+	atomic.AddInt64(&s.count, 1)
+	s.wg.Done()
+}
+
+// Я решил реализовать два способа так как, Mutex под капотом содержит atomic.
