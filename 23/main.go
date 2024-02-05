@@ -23,7 +23,7 @@ func removElement(xArray []int, i int) []int {
 	}
 
 	if i >= len(xArray) {
-		fmt.Println("Index of i out of range of slice")
+		fmt.Println("Index i out of range of slice")
 		return xArray
 	}
 
