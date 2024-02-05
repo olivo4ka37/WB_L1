@@ -2,29 +2,22 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"math/big"
 )
 
 func main() {
-	var x uint64
+	// Инициализация переменных специального типа для работы с большими числами
+	x := new(big.Int)
+	y := new(big.Int)
+	result := new(big.Int)
 
-	x = 123456789123456789123456789123456789123456789123456789123456789123456789
+	// Установка больших значений которые выходят за пределы int64 и uint64
+	x.SetString("123456789123456789123456789123456789123456789123456789123456789123456789", 10)
+	y.SetString("123456789123456789123456789123456789123456789123456789123456789123456789", 10)
 
-	fmt.Println(x)
-
-}
-
-func bigMath(a int, b int, operand byte) string {
-
-	return ""
-}
-
-// Конвертирует десятичное число в двоичную и возвращает значение строкой
-func ConvertTo2Base(x int) (string, error) {
-	str := strconv.Itoa(x)
-	i, err := strconv.ParseInt(str, 10, 64)
-	if err != nil {
-		return "", err
-	}
-	return strconv.FormatInt(i, 2), nil
+	// Вывод результатов арифимитических операций
+	fmt.Printf("a + b = %d\n", result.Add(x, y))
+	fmt.Printf("a - b = %d\n", result.Sub(x, y))
+	fmt.Printf("a * b = %d\n", result.Mul(x, y))
+	fmt.Printf("a / b = %d\n", result.Div(x, y))
 }
