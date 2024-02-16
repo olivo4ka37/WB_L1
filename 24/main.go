@@ -32,4 +32,5 @@ func main() {
 
 	// Проверяем работу функции CalculateDistance
 	fmt.Println(CalculateDistance(point1, point2))
+
 }

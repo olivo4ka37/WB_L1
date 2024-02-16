@@ -20,4 +20,5 @@ func main() {
 	fmt.Printf("a - b = %d\n", result.Sub(x, y))
 	fmt.Printf("a * b = %d\n", result.Mul(x, y))
 	fmt.Printf("a / b = %d\n", result.Div(x, y))
+
 }

@@ -52,4 +52,5 @@ func quickSort(lst []int, left int, right int) []int {
 	}
 
 	return lst
+
 }

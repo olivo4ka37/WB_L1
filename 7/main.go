@@ -33,4 +33,5 @@ func (w *w8Group) concurentWriter(m map[int]int, i int) {
 	m[i] = i
 	w.m.Unlock()
 	w.wg.Done()
+
 }

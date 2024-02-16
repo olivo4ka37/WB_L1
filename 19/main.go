@@ -19,7 +19,6 @@ func main() {
 	for range testString {
 		fmt.Print(string(s.pop()))
 	}
-
 }
 
 // стэк структура

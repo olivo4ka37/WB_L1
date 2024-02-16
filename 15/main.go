@@ -39,6 +39,7 @@ func someFunc() {
 	copy(v2, v1[:100]) // копируем данные в новую область памяти
 
 	justString = string(v2)
+
 }
 
 func createHugeString(length int) string {

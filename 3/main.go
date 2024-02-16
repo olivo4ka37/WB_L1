@@ -52,4 +52,5 @@ func addSquareToChanel(num int, sumCh chan int, wg *sync.WaitGroup) {
 func calcSquare(num int, wg *sync.WaitGroup) int {
 	wg.Done()
 	return num * num
+
 }

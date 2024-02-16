@@ -40,4 +40,5 @@ func reader(writeChan chan int, readChan chan int) {
 		readChan <- x * x
 
 	}
+
 }

@@ -99,4 +99,5 @@ func main() {
 	fmt.Println("Main function exits.")
 
 	w.wg.Wait()
+
 }

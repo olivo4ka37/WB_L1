@@ -28,4 +28,5 @@ func addElement(setOfSets map[int]map[float64]struct{}, key int, value float64) 
 
 	// Добавляем элемент в множество
 	setOfSets[key][value] = struct{}{}
+
 }

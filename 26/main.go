@@ -12,6 +12,7 @@ func main() {
 	fmt.Println(UniqueString("abCdefAaf"))
 	// Тест3
 	fmt.Println(UniqueString("aabcd"))
+
 }
 
 var exists = struct{}{}

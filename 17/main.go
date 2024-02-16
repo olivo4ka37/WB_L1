@@ -36,4 +36,5 @@ func binarySearch(arr []int, left, right, searchX int) int {
 		// и тогда программа выведет -1.
 		return -1
 	}
+
 }

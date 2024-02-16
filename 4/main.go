@@ -67,4 +67,5 @@ func generateString(str chan string) {
 	result := string(buf)
 
 	str <- result
+
 }

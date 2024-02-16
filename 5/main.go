@@ -64,4 +64,5 @@ func declareTime(w *int) {
 	fmt.Println("Write how much seconds program should work\n")
 
 	fmt.Fscan(in, w)
+
 }

@@ -47,4 +47,5 @@ type action struct {
 // IntoduceYourSelfLouder метод стуктуры action
 func (a *action) IntoduceYourSelfLouder() string {
 	return "HELLO MY NAME IS: " + strings.ToUpper(a.actingPerson.name) + " I'M " + strings.ToUpper(a.actingPerson.profession)
+
 }

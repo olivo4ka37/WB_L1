@@ -35,4 +35,5 @@ func main() {
 func squareOfInt(i int, wg *sync.WaitGroup) {
 	fmt.Printf("square of %d is equal to %d\n", i, i*i)
 	wg.Done()
+
 }

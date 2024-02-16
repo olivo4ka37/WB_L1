@@ -27,4 +27,5 @@ func main() {
 
 	fmt.Printf("Исходное значение: %d\n", number)
 	fmt.Printf("После установки i-го бита: %d\n", result)
+
 }

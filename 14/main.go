@@ -24,4 +24,5 @@ func detectType(variable interface{}) {
 	// Используем reflect.TypeOf для определения типа переменной
 	variableType := reflect.TypeOf(variable)
 	fmt.Printf("Тип переменной: %v\n", variableType)
+
 }

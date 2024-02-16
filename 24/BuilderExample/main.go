@@ -57,4 +57,5 @@ func main() {
 	pointer2.SetX(2).SetY(2).Build()
 
 	fmt.Println(CalculateDistance(pointer1, pointer2))
+
 }

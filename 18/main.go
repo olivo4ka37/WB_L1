@@ -23,6 +23,7 @@ func main() {
 	s.wg.Wait()
 
 	fmt.Println(s.count)
+
 }
 
 type schetchik struct {
